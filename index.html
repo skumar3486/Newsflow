@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Newsflow - Social News Feed</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>Newsflow</h1>
+                </div>
+                <div class="header-actions">
+                    <input type="text" id="search-input" class="search-input" placeholder="Search news...">
+                    <button class="btn btn--primary btn--sm" id="refresh-btn">Refresh</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breaking News Banner -->
+    <div class="breaking-banner" id="breaking-banner">
+        <div class="breaking-content">
+            <span class="breaking-label">BREAKING</span>
+            <span class="breaking-text" id="breaking-text">Loading breaking news...</span>
+        </div>
+    </div>
+
+    <!-- Category Filter -->
+    <nav class="category-nav">
+        <div class="container">
+            <div class="category-filters">
+                <button class="category-btn active" data-category="all">All</button>
+                <button class="category-btn" data-category="International">International</button>
+                <button class="category-btn" data-category="National">National</button>
+                <button class="category-btn" data-category="Business">Business</button>
+                <button class="category-btn" data-category="breaking">Breaking</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="news-feed" id="news-feed">
+                <!-- News cards will be inserted here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Story Detail Modal -->
+    <div class="modal hidden" id="story-modal">
+        <div class="modal-backdrop" id="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Story details will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Comments Modal -->
+    <div class="modal hidden" id="comments-modal">
+        <div class="modal-backdrop" id="comments-backdrop"></div>
+        <div class="modal-content comments-modal-content">
+            <div class="modal-header">
+                <h3>Comments</h3>
+                <button class="modal-close" id="comments-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="comments-list" id="comments-list">
+                    <!-- Comments will be inserted here -->
+                </div>
+                <div class="add-comment">
+                    <input type="text" id="comment-input" placeholder="Add a comment..." class="form-control">
+                    <button class="btn btn--primary btn--sm" id="add-comment-btn">Post</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification hidden" id="notification">
+        <span id="notification-text"></span>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
