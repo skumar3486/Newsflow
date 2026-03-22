@@ -1,34 +1,38 @@
-// 1. Define your API Key
 const API_KEY = '0260bcf9bddb4f0f87b518b5ca983b69';
+const newsContainer = document.getElementById('news-container');
 
-// 2. Create the function to get the news
-async function fetchRealNews() {
-    const response = await fetch(`https://newsapi.org/v2/top-headlines?country=in&apiKey=${API_KEY}`);
-    const data = await response.json();
-    
-    // This logs the news to your browser console so you can see it working
-    console.log(data.articles); 
-    
-    // Now call a function to put this data into your HTML
-    displayNews(data.articles);
+async function getNews() {
+    try {
+        const response = await fetch(`https://newsapi.org/v2/top-headlines?country=in&apiKey=${API_KEY}`);
+        const data = await response.json();
+        
+        console.log("Data received:", data); // Check your Console for this!
+
+        if (data.articles && data.articles.length > 0) {
+            displayArticles(data.articles);
+        } else {
+            newsContainer.innerHTML = "<p class='text-white'>No news found at the moment.</p>";
+        }
+    } catch (error) {
+        console.error("Error fetching news:", error);
+        newsContainer.innerHTML = "<p class='text-red-500'>Failed to load news. Check connection.</p>";
+    }
 }
 
-// 3. Run the function when the page opens
-fetchRealNews();
-function displayNews(articles) {
-    const container = document.getElementById('news-container');
-    container.innerHTML = ''; // Clears the "Loading..." text
-
-    articles.forEach(article => {
-        // Create a card for every article
+function displayArticles(articles) {
+    newsContainer.innerHTML = ""; // Clear loader
+    articles.slice(0, 10).forEach(article => {
         const card = `
-            <div class="card">
-                <img src="${article.urlToImage || 'https://via.placeholder.com/150'}" alt="news">
-                <h3>${article.title}</h3>
-                <p>${article.description || ''}</p>
-                <a href="${article.url}" target="_blank">Read More</a>
+            <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
+                <img src="${article.urlToImage || 'https://via.placeholder.com/400x200'}" class="w-full h-48 object-cover rounded">
+                <h2 class="text-xl font-bold mt-2 text-white">${article.title}</h2>
+                <p class="text-gray-400 text-sm mt-1">${article.description || ''}</p>
+                <a href="${article.url}" target="_blank" class="inline-block mt-4 text-blue-400 hover:underline">Read Full Story</a>
             </div>
         `;
-        container.innerHTML += card;
+        newsContainer.insertAdjacentHTML('beforeend', card);
     });
 }
+
+// Start the process
+getNews();
