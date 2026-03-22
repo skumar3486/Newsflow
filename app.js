@@ -1,38 +1,77 @@
 const API_KEY = '0260bcf9bddb4f0f87b518b5ca983b69';
-const newsContainer = document.getElementById('news-container');
+const newsFeed = document.getElementById('news-feed');
+const breakingText = document.getElementById('breaking-text');
+const refreshBtn = document.getElementById('refresh-btn');
+const categoryBtns = document.querySelectorAll('.category-btn');
 
-async function getNews() {
+// 1. Function to fetch and display news
+async function fetchNews(category = 'general') {
+    newsFeed.innerHTML = '<p style="color: white; text-align: center;">Updating feed...</p>';
+    
+    const url = `https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${API_KEY}`;
+    
     try {
-        const response = await fetch(`https://newsapi.org/v2/top-headlines?country=in&apiKey=${API_KEY}`);
+        const response = await fetch(url);
         const data = await response.json();
-        
-        console.log("Data received:", data); // Check your Console for this!
 
-        if (data.articles && data.articles.length > 0) {
-            displayArticles(data.articles);
+        if (data.status === "ok") {
+            displayNews(data.articles);
+            updateBreakingTicker(data.articles);
         } else {
-            newsContainer.innerHTML = "<p class='text-white'>No news found at the moment.</p>";
+            newsFeed.innerHTML = `<p style="color: red;">Error: ${data.message}</p>`;
         }
     } catch (error) {
-        console.error("Error fetching news:", error);
-        newsContainer.innerHTML = "<p class='text-red-500'>Failed to load news. Check connection.</p>";
+        console.error("Fetch error:", error);
+        newsFeed.innerHTML = '<p style="color: red;">Failed to connect to news server.</p>';
     }
 }
 
-function displayArticles(articles) {
-    newsContainer.innerHTML = ""; // Clear loader
-    articles.slice(0, 10).forEach(article => {
+// 2. Function to build the news cards
+function displayNews(articles) {
+    newsFeed.innerHTML = ''; // Clear the loader
+
+    articles.forEach(article => {
+        if (!article.title || !article.urlToImage) return; // Skip incomplete news
+
         const card = `
-            <div class="bg-gray-800 p-4 rounded-lg shadow-lg">
-                <img src="${article.urlToImage || 'https://via.placeholder.com/400x200'}" class="w-full h-48 object-cover rounded">
-                <h2 class="text-xl font-bold mt-2 text-white">${article.title}</h2>
-                <p class="text-gray-400 text-sm mt-1">${article.description || ''}</p>
-                <a href="${article.url}" target="_blank" class="inline-block mt-4 text-blue-400 hover:underline">Read Full Story</a>
+            <div class="news-card">
+                <div class="card-image">
+                    <img src="${article.urlToImage}" alt="news" onerror="this.src='https://via.placeholder.com/400x200?text=Newsflow'">
+                </div>
+                <div class="card-content">
+                    <span class="source-tag">${article.source.name}</span>
+                    <h3>${article.title}</h3>
+                    <p>${article.description || ''}</p>
+                    <div class="card-footer">
+                        <a href="${article.url}" target="_blank" class="read-more">Read Story</a>
+                    </div>
+                </div>
             </div>
         `;
-        newsContainer.insertAdjacentHTML('beforeend', card);
+        newsFeed.insertAdjacentHTML('beforeend', card);
     });
 }
 
-// Start the process
-getNews();
+// 3. Update the breaking news bar
+function updateBreakingTicker(articles) {
+    const titles = articles.slice(0, 5).map(a => a.title).join("  •  ");
+    breakingText.innerText = titles || "No breaking news at the moment.";
+}
+
+// 4. Event Listeners for Categories
+categoryBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        // Remove active class from all, add to clicked
+        categoryBtns.forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        
+        const category = e.target.getAttribute('data-category');
+        fetchNews(category);
+    });
+});
+
+// 5. Refresh Button
+refreshBtn.addEventListener('click', () => fetchNews());
+
+// Initial Load
+window.addEventListener('DOMContentLoaded', () => fetchNews());
