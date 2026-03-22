@@ -15,3 +15,20 @@ async function fetchRealNews() {
 
 // 3. Run the function when the page opens
 fetchRealNews();
+function displayNews(articles) {
+    const container = document.getElementById('news-container');
+    container.innerHTML = ''; // Clears the "Loading..." text
+
+    articles.forEach(article => {
+        // Create a card for every article
+        const card = `
+            <div class="card">
+                <img src="${article.urlToImage || 'https://via.placeholder.com/150'}" alt="news">
+                <h3>${article.title}</h3>
+                <p>${article.description || ''}</p>
+                <a href="${article.url}" target="_blank">Read More</a>
+            </div>
+        `;
+        container.innerHTML += card;
+    });
+}
